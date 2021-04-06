@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type ="text/javascript" src="/static/js/echarts.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function drawChart(pname, pcnt, pcnt2)
+        {
+        // based on prepared DOM, initialize echarts instance
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // specify chart configuration item and data
+        var option = {
+            title : {
+                text : '월별 구매량과 구매건수'
+            },
+            tooltip : {
+                trigger : 'axis',
+                axisPointer : {
+                    type : 'cross',
+                    crossStyle : {
+                        color : '#999'
+                    }
+                }
+            },
+            toolbox: {
+	            feature: {
+		            dataView: {show: true, readOnly: false},
+		            magicType: {show: true, type: ['line', 'bar']},
+		            restore: {show: true},
+		            saveAsImage: {show: true}
+	            }
+            },
+            grid: {
+	            top: '15%',
+	            left: '5%',
+	            right: '10%',
+	            bottom: '5%',
+	            containLabel: true,
+            },
+            legend : {
+                data : ['구매금액합계(월별)','구매건수합계(월별)'] // series와 일치
+            },
+            xAxis : {
+                data : pname,
+                axisPointer : {
+                        type : 'shadow'
+                        }
+                },
+            yAxis : [{
+                type : 'value',
+                name : '구매금액합계(월별)',
+                axisLabel : {
+                        formatter:'{value}'
+                        }
+            },
+            {
+                type : 'value',
+                name : '구매건수합계(월별)',
+                offset : 0,
+                axisLabel : {
+                        formatter : '{value}'
+                        }
+            }],
+            series : [{
+                name : '구매금액합계(월별)',
+                type : 'bar',
+                data : pcnt
+            },
+            {
+                name : '구매건수합계(월별)',
+                type : 'line',
+                yAxisIndex : 1,
+                itemStyle: {
+			            normal: {
+				            color: 'rgb(125, 10, 10)'
+			                    }
+		        },
+		        data : pcnt2
+            }]
+        };
+
+        // use configuration item and data specified to show chart
+        myChart.setOption(option);
+        }
+
+        function recvData( data)
+        {
+            console.log( data )
+            arrOdate = Array.from( data, (v,i)=> v['odate'] )
+            arrCnt = Array.from( data, (v,i)=> v['cnt'] )
+            arrSum = Array.from( data, (v,i)=> v['sum'] )
+
+           console.log( arrOdate )
+           console.log( arrCnt)
+           drawChart( arrOdate, arrSum, arrCnt)
+        }
+        function init()
+        {
+            $.getJSON("mychart", recvData)
+        }
+        $(init)
+
+    </script>
+</head>
+<body>
+    <h1>ajax Test</h1>
+    <div id="main" style="width : 600px; height: 400px;"></div>
+</body>
+</html>
